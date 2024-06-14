@@ -1,19 +1,18 @@
+import { useEnv } from '@directus/env';
+import { ErrorCode, isDirectusError } from '@directus/errors';
 import type { Accountability } from '@directus/types';
-import type { NextFunction, Request, Response } from 'express';
 import { isEqual } from 'lodash-es';
+import { SESSION_COOKIE_OPTIONS } from '../constants.js';
 import getDatabase from '../database/index.js';
 import emitter from '../emitter.js';
 import asyncHandler from '../utils/async-handler.js';
 import { getAccountabilityForToken } from '../utils/get-accountability-for-token.js';
 import { getIPFromReq } from '../utils/get-ip-from-req.js';
-import { ErrorCode, isDirectusError } from '@directus/errors';
-import { useEnv } from '@directus/env';
-import { SESSION_COOKIE_OPTIONS } from '../constants.js';
 
 /**
  * Verify the passed JWT and assign the user ID and role to `req`
  */
-export const handler = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = asyncHandler(async (req, res, next) => {
 	const env = useEnv();
 
 	const defaultAccountability: Accountability = {
@@ -64,6 +63,4 @@ export const handler = async (req: Request, res: Response, next: NextFunction) =
 	}
 
 	return next();
-};
-
-export default asyncHandler(handler);
+});

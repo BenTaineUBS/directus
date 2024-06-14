@@ -5,8 +5,7 @@ import type { Knex } from 'knex';
 import { afterEach, expect, test, vi } from 'vitest';
 import getDatabase from '../database/index.js';
 import emitter from '../emitter.js';
-import '../types/express.d.ts';
-import { handler } from './authenticate.js';
+import { authenticate } from './authenticate.js';
 
 vi.mock('../database/index');
 
@@ -45,7 +44,7 @@ test('Short-circuits when authenticate filter is used', async () => {
 
 	vi.spyOn(emitter, 'emitFilter').mockResolvedValue(customAccountability);
 
-	await handler(req, res, next);
+	await authenticate(req, res, next);
 
 	expect(req.accountability).toEqual(customAccountability);
 	expect(next).toHaveBeenCalledTimes(1);
@@ -72,7 +71,7 @@ test('Uses default public accountability when no token is given', async () => {
 
 	vi.spyOn(emitter, 'emitFilter').mockImplementation(async (_, payload) => payload);
 
-	await handler(req, res, next);
+	await authenticate(req, res, next);
 
 	expect(req.accountability).toEqual({
 		user: null,
@@ -132,7 +131,7 @@ test('Sets accountability to payload contents if valid token is passed', async (
 	const res = {} as Response;
 	const next = vi.fn();
 
-	await handler(req, res, next);
+	await authenticate(req, res, next);
 
 	expect(req.accountability).toEqual({
 		user: userID,
@@ -164,7 +163,7 @@ test('Sets accountability to payload contents if valid token is passed', async (
 		{ issuer: 'directus' },
 	);
 
-	await handler(req, res, next);
+	await authenticate(req, res, next);
 
 	expect(req.accountability).toEqual({
 		user: userID,
@@ -209,8 +208,9 @@ test('Throws InvalidCredentialsError when static token is used, but user does no
 	const res = {} as Response;
 	const next = vi.fn();
 
-	expect(handler(req, res, next)).rejects.toEqual(new InvalidCredentialsError());
-	expect(next).toHaveBeenCalledTimes(0);
+	await authenticate(req, res, next);
+
+	expect(next).toHaveBeenCalledWith(new InvalidCredentialsError());
 });
 
 test('Sets accountability to user information when static token is used', async () => {
@@ -253,7 +253,7 @@ test('Sets accountability to user information when static token is used', async 
 		first: vi.fn().mockResolvedValue(testUser),
 	} as unknown as Knex);
 
-	await handler(req, res, next);
+	await authenticate(req, res, next);
 
 	expect(req.accountability).toEqual(expectedAccountability);
 	expect(next).toHaveBeenCalledTimes(1);
@@ -262,7 +262,8 @@ test('Sets accountability to user information when static token is used', async 
 	next.mockClear();
 	testUser.admin_access = 1 as never;
 	testUser.app_access = 0 as never;
-	await handler(req, res, next);
+	await authenticate(req, res, next);
+
 	expect(req.accountability).toEqual(expectedAccountability);
 	expect(next).toHaveBeenCalledTimes(1);
 
@@ -272,7 +273,8 @@ test('Sets accountability to user information when static token is used', async 
 	testUser.app_access = '1' as never;
 	expectedAccountability.admin = false;
 	expectedAccountability.app = true;
-	await handler(req, res, next);
+	await authenticate(req, res, next);
+
 	expect(req.accountability).toEqual(expectedAccountability);
 	expect(next).toHaveBeenCalledTimes(1);
 });
@@ -310,9 +312,10 @@ test('Invalid session token responds with error and clears the cookie', async ()
 		first: vi.fn().mockResolvedValue(null),
 	} as unknown as Knex);
 
-	await expect(handler(req, res, next)).rejects.toEqual(new InvalidCredentialsError());
+	await authenticate(req, res, next);
+
 	expect(res.clearCookie).toHaveBeenCalledTimes(1);
-	expect(next).toHaveBeenCalledTimes(0);
+	expect(next).toHaveBeenCalledWith(new InvalidCredentialsError());
 });
 
 test('Invalid query token responds with error but does not clear the session cookie', async () => {
@@ -348,7 +351,8 @@ test('Invalid query token responds with error but does not clear the session coo
 		first: vi.fn().mockResolvedValue(null),
 	} as unknown as Knex);
 
-	await expect(handler(req, res, next)).rejects.toEqual(new InvalidCredentialsError());
-	expect(next).toHaveBeenCalledTimes(0);
+	await authenticate(req, res, next);
+
 	expect(res.clearCookie).toHaveBeenCalledTimes(0);
+	expect(next).toHaveBeenCalledWith(new InvalidCredentialsError());
 });

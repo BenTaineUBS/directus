@@ -1,14 +1,13 @@
+import { useEnv } from '@directus/env';
+import { InvalidPayloadError, InvalidQueryError, MethodNotAllowedError } from '@directus/errors';
 import { parseJSON } from '@directus/utils';
 import type { RequestHandler } from 'express';
 import type { DocumentNode } from 'graphql';
-import { getOperationAST, parse, Source } from 'graphql';
-import { InvalidPayloadError, InvalidQueryError, MethodNotAllowedError } from '@directus/errors';
-import { GraphQLValidationError } from '../services/graphql/errors/validation.js';
-import type { GraphQLParams } from '../types/index.js';
-import asyncHandler from '../utils/async-handler.js';
-import { useEnv } from '@directus/env';
+import { Source, getOperationAST, parse } from 'graphql';
+import { GraphQLValidationError } from '../../../services/graphql/errors/validation.js';
+import type { GraphQLParams } from '../../../types/index.js';
 
-export const parseGraphQL: RequestHandler = asyncHandler(async (req, res, next) => {
+export const parseGraphQl: RequestHandler = (req, res, next) => {
 	if (req.method !== 'GET' && req.method !== 'POST') {
 		throw new MethodNotAllowedError({ allowed: ['GET', 'POST'], current: req.method });
 	}
@@ -48,9 +47,9 @@ export const parseGraphQL: RequestHandler = asyncHandler(async (req, res, next) 
 		document = parse(new Source(query), {
 			maxTokens: Number(env['GRAPHQL_QUERY_TOKEN_LIMIT']),
 		});
-	} catch (err: any) {
+	} catch (error: any) {
 		throw new GraphQLValidationError({
-			errors: [err],
+			errors: [error],
 		});
 	}
 
@@ -78,4 +77,4 @@ export const parseGraphQL: RequestHandler = asyncHandler(async (req, res, next) 
 	} as GraphQLParams;
 
 	return next();
-});
+};
