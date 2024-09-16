@@ -590,8 +590,8 @@ importers:
         specifier: 1.4.0
         version: 1.4.0
       '@editorjs/editorjs':
-        specifier: 2.29.1
-        version: 2.29.1
+        specifier: 2.30.6
+        version: 2.30.6
       '@editorjs/embed':
         specifier: 2.7.4
         version: 2.7.4
@@ -2804,8 +2804,8 @@ packages:
   '@editorjs/delimiter@1.4.0':
     resolution: {integrity: sha512-i1Wm3UQsVisM7Fh9focJ1a4kX2l7IxO3zrEd+GmYoPVaNwxb/63GLNbGfCCGZBuvUyzeUDnc8cdhD1QQGwUZIg==}
 
-  '@editorjs/editorjs@2.29.1':
-    resolution: {integrity: sha512-WRT2pCfikMsvySQJqpCU21LfTZaPuxUWsDO8aFGrPx4MKzOR9D+Ur4mNb3jq0FXx2EMqvIWfTyFixJxtjGHTyQ==}
+  '@editorjs/editorjs@2.30.6':
+    resolution: {integrity: sha512-6eQMc4Di3Hz9p4o+NGRgKaCeAF7eAk106m+bsDLc4eo94VGYO1M163OiGFdmanE+w503qTmXOzycWff5blEOAQ==}
 
   '@editorjs/embed@2.7.4':
     resolution: {integrity: sha512-ByvSZnVuh9FhjLGmvjNlxhk3hnqN0g5K+E/tJY6Whdspgh9mst0iBARoVJQDGeJC+NNL2sSgYGt1ZjvEK5Z+lQ==}
@@ -13592,11 +13592,11 @@ snapshots:
     dependencies:
       '@codexteam/icons': 0.0.5
 
-  '@editorjs/editorjs@2.29.1': {}
+  '@editorjs/editorjs@2.30.6': {}
 
   '@editorjs/embed@2.7.4':
     dependencies:
-      '@editorjs/editorjs': 2.29.1
+      '@editorjs/editorjs': 2.30.6
 
   '@editorjs/header@2.8.1':
     dependencies:
